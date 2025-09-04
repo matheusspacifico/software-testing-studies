@@ -54,7 +54,7 @@ public class UpdateProductUseCase {
     private void changePrice(Double newPrice, Product existingProduct) {
         if (newPrice == null) return;
         if (newPrice <= 0) {
-            invalidEntries.put(newPrice.toString(), "Price cannot be negative!");
+            invalidEntries.put(newPrice.toString(), "Price cannot be zero or negative!");
             return;
         }
         if (!existingProduct.getPrice().equals(newPrice)) {
@@ -72,7 +72,7 @@ public class UpdateProductUseCase {
     private void changeQuantity(Integer newQuantity, Product existingProduct) {
         if (newQuantity == null) return;
         if (newQuantity <= 0) {
-            invalidEntries.put(newQuantity.toString(), "Quantity cannot be negative!");
+            invalidEntries.put(newQuantity.toString(), "Quantity cannot be zero or negative!");
             return;
         }
         if (!existingProduct.getQuantity().equals(newQuantity)) {
