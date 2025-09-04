@@ -17,12 +17,16 @@ public class UpdateProductUseCase {
     }
 
     public Map<String, String> update(Product newProduct) {
-        invalidEntries.clear();
+        if (Objects.isNull(newProduct)) {
+            throw new IllegalArgumentException("Product must not be null!");
+        }
 
         Optional<Product> optionalProduct = repository.findById(newProduct.getId());
         if (optionalProduct.isEmpty()) {
             throw new NoSuchElementException("Product with id: " + newProduct.getId() + " not found!");
         }
+
+        invalidEntries.clear();
 
         Product existingProduct = optionalProduct.get();
 
