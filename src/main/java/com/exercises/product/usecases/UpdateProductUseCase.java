@@ -45,7 +45,7 @@ public class UpdateProductUseCase {
     private void changeName(String newName, Product existingProduct) {
         if (newName == null) return;
         if (newName.isBlank()) {
-            invalidEntries.add("Product name cannot be blank.");
+            invalidEntries.add(newName);
             return;
         }
         if (!existingProduct.getName().equals(newName)) {
@@ -56,7 +56,7 @@ public class UpdateProductUseCase {
     private void changePrice(Double newPrice, Product existingProduct) {
         if (newPrice == null) return;
         if (newPrice <= 0) {
-            invalidEntries.add("Price must be a positive number.");
+            invalidEntries.add(newPrice.toString());
             return;
         }
         if (!existingProduct.getPrice().equals(newPrice)) {
@@ -74,7 +74,7 @@ public class UpdateProductUseCase {
     private void changeQuantity(Integer newQuantity, Product existingProduct) {
         if (newQuantity == null) return;
         if (newQuantity <= 0) {
-            invalidEntries.add("Quantity must be a positive number.");
+            invalidEntries.add(newQuantity.toString());
             return;
         }
         if (!existingProduct.getQuantity().equals(newQuantity)) {
@@ -85,7 +85,7 @@ public class UpdateProductUseCase {
     private void changeDescription(String newDescription, Product existingProduct) {
         if (newDescription == null) return;
         if (newDescription.isBlank()) {
-            invalidEntries.add("Description cannot be blank.");
+            invalidEntries.add(newDescription);
             return;
         }
         if (!existingProduct.getDescription().equals(newDescription)) {
