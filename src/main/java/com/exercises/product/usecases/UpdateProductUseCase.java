@@ -4,21 +4,19 @@ import com.exercises.product.domain.Category;
 import com.exercises.product.domain.Product;
 import com.exercises.product.repository.ProductRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class UpdateProductUseCase {
     private final ProductRepository repository;
-    private final List<String> invalidEntries;
+    private final Map<String, String> invalidEntries;
 
     public UpdateProductUseCase(ProductRepository repository) {
         this.repository = repository;
-        this.invalidEntries = new ArrayList<>();
+        this.invalidEntries = new ConcurrentHashMap<>();
     }
 
-    public List<String> update(Product newProduct) {
+    public Map<String, String> update(Product newProduct) {
         invalidEntries.clear();
 
         Optional<Product> optionalProduct = repository.findById(newProduct.getId());
@@ -45,7 +43,7 @@ public class UpdateProductUseCase {
     private void changeName(String newName, Product existingProduct) {
         if (newName == null) return;
         if (newName.isBlank()) {
-            invalidEntries.add(newName);
+            invalidEntries.put(newName, "Name cannot be blank!");
             return;
         }
         if (!existingProduct.getName().equals(newName)) {
@@ -56,7 +54,7 @@ public class UpdateProductUseCase {
     private void changePrice(Double newPrice, Product existingProduct) {
         if (newPrice == null) return;
         if (newPrice <= 0) {
-            invalidEntries.add(newPrice.toString());
+            invalidEntries.put(newPrice.toString(), "Price cannot be negative!");
             return;
         }
         if (!existingProduct.getPrice().equals(newPrice)) {
@@ -74,7 +72,7 @@ public class UpdateProductUseCase {
     private void changeQuantity(Integer newQuantity, Product existingProduct) {
         if (newQuantity == null) return;
         if (newQuantity <= 0) {
-            invalidEntries.add(newQuantity.toString());
+            invalidEntries.put(newQuantity.toString(), "Quantity cannot be negative!");
             return;
         }
         if (!existingProduct.getQuantity().equals(newQuantity)) {
@@ -85,7 +83,7 @@ public class UpdateProductUseCase {
     private void changeDescription(String newDescription, Product existingProduct) {
         if (newDescription == null) return;
         if (newDescription.isBlank()) {
-            invalidEntries.add(newDescription);
+            invalidEntries.put(newDescription, "Description cannot be blank!");
             return;
         }
         if (!existingProduct.getDescription().equals(newDescription)) {
