@@ -29,4 +29,14 @@ public class ProductFactory {
 
         return new Product(lastId + 1, f.leagueOfLegends().champion(), f.leagueOfLegends().quote(), f.number().randomDouble(2, 1, 10000), f.number().numberBetween(1, 100), c.get(randomIndex));
     }
+
+    public Product createProductFakerSetId(Long id) {
+        Faker f = new Faker();
+        Random r = new Random();
+
+        List<Category> c = List.of(Category.values());
+        int randomIndex = r.nextInt(c.size());
+
+        return new Product(id, f.leagueOfLegends().champion(), f.leagueOfLegends().quote(), f.number().randomDouble(2, 1, 10000), f.number().numberBetween(1, 100), c.get(randomIndex));
+    }
 }
