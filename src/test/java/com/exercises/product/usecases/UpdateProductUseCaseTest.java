@@ -44,7 +44,7 @@ public class UpdateProductUseCaseTest {
     class NullAndBlankEntries {
 
         @Test
-        @DisplayName("Should throw IllegalArgumentException when the input product object is null")
+        @DisplayName("T1: Should throw IllegalArgumentException when the input product object is null")
         void shouldThrowExceptionWhenInputIsNull() {
             assertThrows(IllegalArgumentException.class, () -> sut.update(null));
         }
@@ -55,7 +55,7 @@ public class UpdateProductUseCaseTest {
     class InvalidEntries {
 
         @Test
-        @DisplayName("Should throw NoSuchElementException when the product was not found")
+        @DisplayName("T2: Should throw NoSuchElementException when the product was not found")
         void shouldThrowExceptionWhenProductIsNotFound() {
             Product product = factory.createProductFaker();
             when(repository.findById(product.getId())).thenReturn(Optional.empty());
@@ -68,7 +68,7 @@ public class UpdateProductUseCaseTest {
     class ValidEntries {
 
         @Test
-        @DisplayName("Should update every field when all fields are valid and non null and return an empty invalid entries list")
+        @DisplayName("T3: Should update every field when all fields are valid and non null and return an empty invalid entries list")
         void shouldUpdateEveryFieldWhenAllFieldsAreValidAndNonNullAndReturnAnEmptyInvalidEntriesList() {
             Product existingProduct = factory.createProductFaker();
             Product newProduct = factory.createProductFakerSetId(existingProduct.getId());
@@ -95,7 +95,7 @@ public class UpdateProductUseCaseTest {
 
         @ParameterizedTest
         @MethodSource("mixedNullAndNonNullFields")
-        @DisplayName("Should update only valid fields and return the proper invalid entry map for a mix of different entries")
+        @DisplayName("T4-T12: Should update only valid fields and return the proper invalid entry map for a mix of different entries")
         void shouldUpdateOnlyValidFieldsAndReturnTheProperInvalidEntryMapForAMixOfDifferentEntries(Product inputProduct, Map<String, String> expectedInvalidEntries) {
             Product existingProduct = factory.createProductFakerSetId(inputProduct.getId());
 
@@ -106,6 +106,99 @@ public class UpdateProductUseCaseTest {
             assertEquals(expectedInvalidEntries, invalidEntries);
         }
 
+
+        @Test
+        @DisplayName("T13: Should not update any field with all null fields input and return an empty map")
+        void shouldNotUpdateAnyFieldWithAllNullFieldsInputAndReturnAnEmptyMap() {
+            Product existingProduct = factory.createProductFaker();
+            Product newProduct = factory.createProductManuallySetId(existingProduct.getId(), null, null, null, null, null);
+
+            when(repository.findById(newProduct.getId())).thenReturn(Optional.of(existingProduct));
+
+            Map<String, String> invalidEntries = sut.update(newProduct);
+
+            verify(repository, never()).saveOrUpdate(any(Product.class));
+            assertTrue(invalidEntries.isEmpty());
+        }
+
+        @Test
+        @DisplayName("T14: Should not update any field with all fields equals existing product fields and return an empty map")
+        void shouldNotUpdateAnyFieldWithAllFieldsEqualsExistingProductFieldsAndReturnAnEmptyMap() {
+            Product existingProduct = factory.createProductFaker();
+            Product newProduct = factory.createProductManuallySetId(
+                    existingProduct.getId(),
+                    existingProduct.getName(),
+                    existingProduct.getDescription(),
+                    existingProduct.getPrice(),
+                    existingProduct.getQuantity(),
+                    existingProduct.getCategory()
+            );
+
+            when(repository.findById(newProduct.getId())).thenReturn(Optional.of(existingProduct));
+
+            Map<String, String> invalidEntries = sut.update(newProduct);
+
+            verify(repository, never()).saveOrUpdate(any(Product.class));
+            assertTrue(invalidEntries.isEmpty());
+        }
+
+        @Test
+        @DisplayName("T15: Should return a full map of errors when all possible fields are invalid")
+        void shouldReturnFullErrorMapWhenAllFieldsAreInvalid() {
+            Product existingProduct = factory.createProductFakerSetId(1L);
+            Product newProduct = factory.createProductManuallySetId(existingProduct.getId(), "", "  ", 0.0, -5, null);
+
+            when(repository.findById(newProduct.getId())).thenReturn(Optional.of(existingProduct));
+
+            Map<String, String> invalidEntries = sut.update(newProduct);
+
+            assertEquals(4, invalidEntries.size());
+            assertTrue(invalidEntries.containsValue("Name cannot be blank!"));
+            assertTrue(invalidEntries.containsValue("Description cannot be blank!"));
+            assertTrue(invalidEntries.containsValue("Price cannot be zero or negative!"));
+            assertTrue(invalidEntries.containsValue("Quantity cannot be zero or negative!"));
+
+            verify(repository, never()).saveOrUpdate(any(Product.class));
+        }
+
+        @Test
+        @DisplayName("T16, T17: Should return a partial error map for a mix of valid and invalid fields")
+        void shouldReturnPartialErrorMapForMixedValidAndInvalidFields() {
+            Product existingProduct = factory.createProductFakerSetId(1L);
+            Product newProduct = factory.createProductManuallySetId(existingProduct.getId(), "Valid New Name", "", -99.9, 100, null);
+
+            when(repository.findById(newProduct.getId())).thenReturn(Optional.of(existingProduct));
+
+            Map<String, String> invalidEntries = sut.update(newProduct);
+
+            assertEquals(2, invalidEntries.size());
+            assertTrue(invalidEntries.containsValue("Description cannot be blank!"));
+            assertTrue(invalidEntries.containsValue("Price cannot be zero or negative!"));
+
+            verify(repository, never()).saveOrUpdate(any(Product.class));
+        }
+
+        @Test
+        @DisplayName("T18, T19, T20: Should update only one field when all others are null")
+        void shouldUpdateOnlyOneFieldWhenAllOthersAreNull() {
+            Product existingProduct = factory.createProductFakerSetId(1L);
+            Product newProduct = factory.createProductManuallySetId(existingProduct.getId(), null, null, 999.99, null, null);
+
+            when(repository.findById(newProduct.getId())).thenReturn(Optional.of(existingProduct));
+
+            Map<String, String> invalidEntries = sut.update(newProduct);
+
+            assertTrue(invalidEntries.isEmpty());
+
+            ArgumentCaptor<Product> productCaptor = ArgumentCaptor.forClass(Product.class);
+            verify(repository).saveOrUpdate(productCaptor.capture());
+
+            Product savedProduct = productCaptor.getValue();
+
+            assertEquals(999.99, savedProduct.getPrice());
+            assertEquals(existingProduct.getName(), savedProduct.getName());
+            assertEquals(existingProduct.getQuantity(), savedProduct.getQuantity());
+        }
 
         private static Stream<Arguments> mixedNullAndNonNullFields() {
             ProductRepository r = new ProductRepositoryDummyImpl();
