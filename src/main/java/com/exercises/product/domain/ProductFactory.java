@@ -19,6 +19,10 @@ public class ProductFactory {
         return new Product(lastId + 1, name, description, price, quantity, category);
     }
 
+    public Product createProductManuallySetId(Long id, String name, String description, Double price, Integer quantity, Category category) {
+        return new Product(id, name, description, price, quantity, category);
+    }
+
     public Product createProductFaker() {
         Long lastId = repository.findLastId();
         Faker f = new Faker();
