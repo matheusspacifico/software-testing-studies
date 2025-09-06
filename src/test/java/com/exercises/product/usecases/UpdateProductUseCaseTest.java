@@ -9,12 +9,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UpdateProductUseCaseTest {
@@ -51,12 +51,27 @@ public class UpdateProductUseCaseTest {
         @DisplayName("Should throw NoSuchElementException when the product was not found")
         void shouldThrowExceptionWhenProductIsNotFound() {
             Product product = factory.createProductFaker();
-            System.out.println(product.toString());
-
             when(repository.findById(product.getId())).thenReturn(Optional.empty());
-
             assertThrows(NoSuchElementException.class, () -> sut.update(product));
-            verify(repository).findById(product.getId());
+        }
+    }
+
+    @Nested
+    @DisplayName("When the input is valid (keep in mind null field entries are valid and they are just skipped)")
+    class ValidEntries {
+
+        @Test
+        @DisplayName("Should update every field when all fields are valid and non null and return an empty invalid entries list")
+        void shouldUpdateEveryFieldWhenAllFieldsAreValidAndNonNullAndReturnAnEmptyInvalidEntriesList() {
+            Product existingProduct = factory.createProductFaker();
+            Product updatedProduct = factory.createProductFakerSetId(existingProduct.getId());
+
+            when(repository.findById(updatedProduct.getId())).thenReturn(Optional.of(existingProduct));
+
+            Map<String, String> invalidEntries = sut.update(updatedProduct);
+
+            verify(repository).findById(prod)
+
         }
     }
 }
