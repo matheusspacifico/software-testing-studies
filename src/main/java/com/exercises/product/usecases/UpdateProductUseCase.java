@@ -4,7 +4,10 @@ import com.exercises.product.domain.Category;
 import com.exercises.product.domain.Product;
 import com.exercises.product.repository.ProductRepository;
 
-import java.util.*;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class UpdateProductUseCase {
@@ -27,71 +30,85 @@ public class UpdateProductUseCase {
         }
 
         invalidEntries.clear();
-
         Product existingProduct = optionalProduct.get();
 
-        changeName(newProduct.getName(), existingProduct);
-        changePrice(newProduct.getPrice(), existingProduct);
-        changeCategory(newProduct.getCategory(), existingProduct);
-        changeQuantity(newProduct.getQuantity(), existingProduct);
-        changeDescription(newProduct.getDescription(), existingProduct);
+        boolean isModified = false;
+
+        isModified |= changeName(newProduct.getName(), existingProduct);
+        isModified |= changePrice(newProduct.getPrice(), existingProduct);
+        isModified |= changeCategory(newProduct.getCategory(), existingProduct);
+        isModified |= changeQuantity(newProduct.getQuantity(), existingProduct);
+        isModified |= changeDescription(newProduct.getDescription(), existingProduct);
 
         if (!invalidEntries.isEmpty()) {
             return invalidEntries;
         }
 
-        repository.saveOrUpdate(existingProduct);
+        if (isModified) {
+            repository.saveOrUpdate(existingProduct);
+        }
+
         return invalidEntries;
     }
 
-    private void changeName(String newName, Product existingProduct) {
-        if (newName == null) return;
+    private boolean changeName(String newName, Product existingProduct) {
+        if (newName == null) return false;
         if (newName.isBlank()) {
             invalidEntries.put(newName, "Name cannot be blank!");
-            return;
+            return false;
         }
         if (!existingProduct.getName().equals(newName)) {
             existingProduct.setName(newName);
+            return true;
         }
+        return false;
     }
 
-    private void changePrice(Double newPrice, Product existingProduct) {
-        if (newPrice == null) return;
+    private boolean changePrice(Double newPrice, Product existingProduct) {
+        if (newPrice == null) return false;
         if (newPrice <= 0) {
             invalidEntries.put(newPrice.toString(), "Price cannot be zero or negative!");
-            return;
+            return false;
         }
         if (!existingProduct.getPrice().equals(newPrice)) {
             existingProduct.setPrice(newPrice);
+            return true;
         }
+        return false;
     }
 
-    private void changeCategory(Category newCategory, Product existingProduct) {
-        if (newCategory == null) return;
+    private boolean changeCategory(Category newCategory, Product existingProduct) {
+        if (newCategory == null) return false;
         if (!existingProduct.getCategory().equals(newCategory)) {
             existingProduct.setCategory(newCategory);
+            return true;
         }
+        return false;
     }
 
-    private void changeQuantity(Integer newQuantity, Product existingProduct) {
-        if (newQuantity == null) return;
+    private boolean changeQuantity(Integer newQuantity, Product existingProduct) {
+        if (newQuantity == null) return false;
         if (newQuantity <= 0) {
             invalidEntries.put(newQuantity.toString(), "Quantity cannot be zero or negative!");
-            return;
+            return false;
         }
         if (!existingProduct.getQuantity().equals(newQuantity)) {
             existingProduct.setQuantity(newQuantity);
+            return true;
         }
+        return false;
     }
 
-    private void changeDescription(String newDescription, Product existingProduct) {
-        if (newDescription == null) return;
+    private boolean changeDescription(String newDescription, Product existingProduct) {
+        if (newDescription == null) return false;
         if (newDescription.isBlank()) {
             invalidEntries.put(newDescription, "Description cannot be blank!");
-            return;
+            return false;
         }
         if (!existingProduct.getDescription().equals(newDescription)) {
             existingProduct.setDescription(newDescription);
+            return true;
         }
+        return false;
     }
 }
