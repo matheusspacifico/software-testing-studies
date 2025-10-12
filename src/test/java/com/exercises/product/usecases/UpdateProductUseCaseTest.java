@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@Tag("UnitTest")
 @ExtendWith(MockitoExtension.class)
 public class UpdateProductUseCaseTest {
 
