@@ -16,4 +16,4 @@
 | T6 | Data com 1 subarray que forma equilátero    | Objeto Statistics | (0, 1, 0, 0)            |
 | T7 | Data com 1 subarray que forma isósceles     | Objeto Statistics | (0, 0, 1, 0)            |
 | T8 | Data com 1 subarray que forma escaleno      | Objeto Statistics | (0, 0, 0, 1)            |
-| T9 | Data com 4 subarray um de cada              | Objeto Statistics | (1, 1, 1, 1)            |
+| T9 | Data com 4 subarrays um de cada             | Objeto Statistics | (1, 1, 1, 1)            |
