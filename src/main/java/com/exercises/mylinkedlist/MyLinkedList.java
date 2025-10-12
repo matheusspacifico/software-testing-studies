@@ -1,5 +1,9 @@
 package com.exercises.mylinkedlist;
 
+/*
+Code acquired through Java's Linked List Implementation.
+It was only copied for educational purposes (sut to be tested).
+ */
 public class MyLinkedList<E> {
     private Node<E> first;
     private Node<E> last;
