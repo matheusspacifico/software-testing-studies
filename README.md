@@ -7,6 +7,7 @@ Used technologies:
 - JUnit 5: The primary testing framework for writing and running tests.
 - Mockito: The mocking framework used to isolate the code under test by creating mock objects and verifying interactions.
 - Assertions: A variety of assertion libraries are used to make test validation more readable and expressive. This includes JUnit's built-in assertions and AssertJ for fluent assertions
+- Pitest: A library to generate test mutants, making it possible to check test strengthness and coverage.
 
 ## Tests Raising
 
