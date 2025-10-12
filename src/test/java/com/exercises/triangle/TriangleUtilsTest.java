@@ -81,11 +81,25 @@ public class TriangleUtilsTest {
             var isoscelesResult = new Statistics(0, 0, 1, 0);
             var scaleneResult = new Statistics(0, 0, 0, 1);
 
+            // NOVOS CASOS PARA COBRIR BRANCHES
+            // Cobre a condição 'a + c ≤ b'
+            double[][] nonTriangleAC_B = {{0, 0, 5, 5, 0, 0}};
+            // Cobre a condição 'b + c ≤ a'
+            double[][] nonTriangleBC_A = {{0, 0, 10, 0, 8, 0}};
+            // Cobre os branches faltantes de isósceles (a==b) e equilátero (b!=c)
+            double[][] isoscelesAB = {{2, 0, 0, 3, -2, 0}};
+            // Cobre o branch faltante de isósceles (a==c)
+            double[][] isoscelesAC = {{0, 3, -2, 0, 2, 0}};
+
             return Stream.of(
                     Arguments.of(nonTriangleEntry, nonTriangleResult),
                     Arguments.of(equilateralEntry, equilateralResult),
                     Arguments.of(isoscelesEntry, isoscelesResult),
-                    Arguments.of(scaleneEntry, scaleneResult)
+                    Arguments.of(scaleneEntry, scaleneResult),
+                    Arguments.of(nonTriangleAC_B, nonTriangleResult),
+                    Arguments.of(nonTriangleBC_A, nonTriangleResult),
+                    Arguments.of(isoscelesAB, isoscelesResult),
+                    Arguments.of(isoscelesAC, isoscelesResult)
             );
         }
     }
